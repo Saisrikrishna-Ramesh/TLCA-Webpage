@@ -82,46 +82,56 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// ── Contact form → sends email via mailto ──
+// ── EmailJS config — fill these in after creating your free account at emailjs.com ──
+const EMAILJS_PUBLIC_KEY   = 'YOUR_PUBLIC_KEY';   // Account → API Keys → Public Key
+const EMAILJS_SERVICE_ID   = 'YOUR_SERVICE_ID';   // Email Services → your service ID
+const EMAILJS_TEMPLATE_ID  = 'YOUR_TEMPLATE_ID';  // Email Templates → your template ID
+
+emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+// ── Contact form → sends email via EmailJS ──
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const name = document.getElementById('form-name').value.trim();
-    const phone = document.getElementById('form-phone').value.trim();
-    const email = document.getElementById('form-email').value.trim();
-    const curriculum = document.getElementById('form-curriculum').value;
-    const message = document.getElementById('form-message').value.trim();
-
-    // Compose the email body
-    const body = [
-      `Name: ${name}`,
-      `Phone: ${phone}`,
-      email ? `Email: ${email}` : '',
-      curriculum ? `Curriculum: ${curriculum}` : '',
-      '',
-      `Message:`,
-      message || '(No message provided)'
-    ].filter(Boolean).join('\n');
-
-    const subject = `New Enquiry from ${name} — TLCA Website`;
-    const mailto = `mailto:tlca.enquiries@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-    // Open email client
-    window.location.href = mailto;
-
-    // Show success feedback
     const btn = contactForm.querySelector('button[type="submit"]');
     const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="ph ph-check-circle"></i> Opening Email Client...';
-    btn.style.background = '#28a06e';
+
+    // Show loading state
+    btn.innerHTML = '<i class="ph ph-circle-notch"></i> Sending...';
     btn.disabled = true;
-    setTimeout(() => {
-      btn.innerHTML = originalHTML;
-      btn.style.background = '';
-      btn.disabled = false;
-    }, 3000);
+
+    const templateParams = {
+      from_name:  document.getElementById('form-name').value.trim(),
+      from_phone: document.getElementById('form-phone').value.trim(),
+      from_email: document.getElementById('form-email').value.trim(),
+      curriculum: document.getElementById('form-curriculum').value,
+      message:    document.getElementById('form-message').value.trim(),
+      to_email:   'tlca.enquiries@gmail.com',
+    };
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+      .then(() => {
+        btn.innerHTML = '<i class="ph ph-check-circle"></i> Message Sent!';
+        btn.style.background = '#28a06e';
+        contactForm.reset();
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 4000);
+      })
+      .catch((err) => {
+        console.error('EmailJS error:', err);
+        btn.innerHTML = '<i class="ph ph-warning"></i> Failed — try again';
+        btn.style.background = '#c0392b';
+        btn.disabled = false;
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.background = '';
+        }, 4000);
+      });
   });
 }
 
