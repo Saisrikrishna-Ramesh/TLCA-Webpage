@@ -82,10 +82,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// ── EmailJS config — fill these in after creating your free account at emailjs.com ──
-const EMAILJS_PUBLIC_KEY   = 'YOUR_PUBLIC_KEY';   // Account → API Keys → Public Key
-const EMAILJS_SERVICE_ID   = 'YOUR_SERVICE_ID';   // Email Services → your service ID
-const EMAILJS_TEMPLATE_ID  = 'YOUR_TEMPLATE_ID';  // Email Templates → your template ID
+// ── EmailJS config ──
+const EMAILJS_PUBLIC_KEY   = 'DwJeK5HrJRRMK7MjI';
+const EMAILJS_SERVICE_ID   = 'service_z92yzql';
+const EMAILJS_TEMPLATE_ID  = 'template_bbgoe2o';
 
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
